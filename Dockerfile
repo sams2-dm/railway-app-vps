@@ -22,11 +22,12 @@ RUN sed -i 's/#PermitRootLogin.*/PermitRootLogin yes/' /etc/ssh/sshd_config && \
     sed -i 's/PasswordAuthentication no/PasswordAuthentication yes/' /etc/ssh/sshd_config
 
 # Install ngrok (Ubuntu 24.04 / noble)
-RUN curl -fsSL https://ngrok-agent.s3.amazonaws.com/ngrok.asc \
-    | gpg --dearmor -o /usr/share/keyrings/ngrok.gpg && \
-    echo "deb [signed-by=/usr/share/keyrings/ngrok.gpg] https://ngrok-agent.s3.amazonaws.com noble main" \
-    > /etc/apt/sources.list.d/ngrok.list && \
-    apt-get update && apt-get install -y ngrok
+RUN curl -sSL https://ngrok-agent.s3.amazonaws.com/ngrok.asc \
+  | sudo tee /etc/apt/trusted.gpg.d/ngrok.asc >/dev/null \
+  && echo "deb https://ngrok-agent.s3.amazonaws.com bookworm main" \
+  | sudo tee /etc/apt/sources.list.d/ngrok.list \
+  && sudo apt update \
+  && sudo apt install ngrok -y
 
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
